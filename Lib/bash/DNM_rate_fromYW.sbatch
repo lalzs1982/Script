@@ -1,0 +1,40 @@
+#!/bin/bash
+#SBATCH --job-name=DNMrate
+#SBATCH --output=/home/zhongshan/sbatch.out
+#SBATCH --error=/home/zhongshan/sbatch.err
+#SBATCH --time=24:00:00
+#SBATCH --partition=broadwl
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem-per-cpu=32000
+
+module load bedtools 
+module load python
+
+# This script is used to generate allele-specific base level mutation rate based on the 7-mer model based on extremely rare variants.
+#the input is bed file with the 4th and 5th column represent ID/groups, 6 the column for dataset 
+ref=/project2/xinhe/zhongshan/data/hg19.fa
+bed=$1 # example: /project2/xinhe/zhongshan/noncodingRNA/anno_comb
+path=/project2/xinhe/TADA-A
+
+# Step 1: Get the nucleotide sequence of each interval, in tab format
+bedtools getfasta -fi $ref -bed $bed  -fo $bed.fasta -tab
+
+# Step 2: Use the output file to extract ref/alt of each base and one column of the 1-based position within the window intervals.
+python /home/zhongshan/code/ref_alt_extract_for_ERV_mutrate_generation.py $bed.fasta  > $bed.fasta.tri
+#rm $bed.fasta
+#Also remove entries that have alt the same as ref
+awk '$3 != $4 && $3 != "N" ' $bed.fasta.tri | sort -k1,1 -k2,2n > $bed.fasta.tri2; mv $bed.fasta.tri2 $bed.fasta.tri
+
+#step3: obtain mutation rate
+perl /home/zhongshan/code/mr_eel.pl --in $bed.fasta.tri  --rates /project2/xinhe/zhongshan/data/ERV_7bp_rates.txt --ref /project2/xinhe/zhongshan/data/human_g1k_v37.fasta > $bed.fasta.tri.mutrate
+
+sed '1d' $bed.fasta.tri.mutrate | awk {'print "chr"$1"\t"$2-1"\t"$2"\t"$3"\t"$4"\t"$6*0.000001'} > $bed.fasta.tri.mutrate.standardized
+
+#step4: mutation rate sum up for each ID/groups
+intersectBed -wo -a $bed -b $bed.fasta.tri.mutrate.standardized | awk 'BEGIN{FS="\t";OFS="\t"}{print $1,$2,$3,$4,$5,$6,$12}' > $bed.mut
+/home/zhongshan/code/mutrate_sum.pl $bed.mut | sort -k1,1 -k2,2n -k3,3n | uniq > $bed.mutrate;
+
+echo "final output: $bed.mutrate"
+
+
