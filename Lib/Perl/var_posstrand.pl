@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 
+my %rev=(A=>"T",T=>"A",G=>"C",C=>"G");
 my %genome;
 my $chr;
 open FI,$ARGV[0] || die "$!\n"; #genome fasta file
@@ -21,11 +22,12 @@ chomp;
 
 my @x=split/\t/,$_;
 next if (length($x[3]) !=1 || length($x[4]) !=1 || $x[3] eq '-' || $x[4] eq '-');
-my ($chr,$pos,$ref)=@x[0,2,3];
+my ($chr,$pos,$ref,$alt)=@x[0,2,3,4];
 my $ref0=uc(substr($genome{$chr},$pos-1,1));
-if($ref ne $ref0){print "Error!, ref should be $ref0 : $_\n"}
+if($ref0 eq $rev{$ref}){ $x[3]=$ref0; $x[4]=$rev{$alt};print STDERR "Error!, ref should be $ref0 : $_\n"}
+print join("\t",@x),"\n";
 $test++;
 }
 close FI;
-print "$test sites tested\n";
+print STDERR "$test sites tested\n";
 
