@@ -1,29 +1,33 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
 
-my $col1=$ARGV[2];
-my $col2=$ARGV[3];
+#overlap two files using specified columns, note the first file should be larger, and all of its columns printed
+
+my $col1=$ARGV[2]; #comma seperated list of columns for first file
+my $col2=$ARGV[3]; #comma seperated list of columns for second file
+
+my @cols1=split /,/,$col1;
+my @cols2=split /,/,$col2;
 
 my %rec;
-open FI,$ARGV[0];
+open FI,$ARGV[1]; #small file
 while(<FI>)
 {
 chomp;
 my @x=split/\t/,$_;
-$rec{$x[$col1]}=$_;
+my $key=join("\t",@x[@cols2]);
+$rec{$key}=$_;
 }
 close FI;
 
-open FI,$ARGV[1];
+open FI,$ARGV[0]; #large file
 while(<FI>)
 {
 chomp;
 my @x=split/\t/,$_;
-if(defined $rec{$x[$col2]}){print join("\t",$rec{$x[$col2]},$_),"\n"}
-#my @y=split/;/,$x[6];
-#my $k=0;
-#map {if(defined $rec{$_}){$k=1}} @y;
-#if($k==1){print $_,"\n"}
+my $key=join("\t",@x[@cols1]);
+my $app=defined $rec{$key}?$rec{$key}:"NULL";
+print join("\t",$_,$app),"\n" 
 }
 close FI;
-
-
