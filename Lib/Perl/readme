@@ -1,1 +1,3 @@
-this contain perl script
+this contain perl script, perl scripts are mainly used for string operations, including pattern match, occurences calculations, 
+search and filter etc. Perl can be used for efficient large file processing and summary.
+
