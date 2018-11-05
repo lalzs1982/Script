@@ -25,8 +25,8 @@ mv $total.bwbed.sum $total.mr
 fi
 
 #2.2, retrieve DNM rate for total and also regions from the $total.bwbed.sum
-sort -k1,1 -k2,2n $regions.1 > $regions.2; mv $regions.2 $regions.1;
-sort -k1,1 -k2,2n $total.mr > $total.mr.1; mv $total.mr.1 $total.mr;
+#sort -k1,1 -k2,2n $regions.1 > $regions.2; mv $regions.2 $regions.1;
+#sort -k1,1 -k2,2n $total.mr > $total.mr.1; mv $total.mr.1 $total.mr;
 intersectBed -wo -sorted -a $regions.1 -b $total.mr | awk 'BEGIN{FS="\t";OFS="\t"}$3==$9 && $6==$11{print $4,$7,$8,$9,$10,$11,$12}' | sort|uniq \
 > $regions.1.mr 
 cat /dev/null > $regions.1.mr.sum
