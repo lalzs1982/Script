@@ -20,7 +20,7 @@ intersectBed -sorted -u -a $dnm -b $total > $dnm.1;
 #2, calculate DNM rate for region and total
 #2.1, produce mutation rate for each unit of total regions (for repeated usage)
 if [! -f $total.mr ];then
-/project2/xinhe/zhongshan1/tools/bash/bw_bed_sum_over.sh $DNMrate $total #re: $total.bwbed.sum, with DNM rate appended at last column
+/project2/xinhe/zhongshan1/tools/bash/bw_bed_sum_over.sh $DNMrate $total #re: $total.bwbed.sum, with DNM rate appended at last column, and 0 mr entries removed
 mv $total.bwbed.sum $total.mr
 fi
 
