@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
+#this code could convert genomic coordinates to transcript coordinates (distance from the TSS on forward direction)
 my %rec;
 open FI,$ARGV[0] || die "$!"; #postion and exon(gtf) overlap file
 while(<FI>)
