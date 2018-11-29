@@ -11,23 +11,29 @@ my @cols1=split /,/,$col1;
 my @cols2=split /,/,$col2;
 
 my %rec;
-open FI,$ARGV[1]; #small file
+if($ARGV[1]=~/\.gz$/){open FI,"gunzip -c $ARGV[1]|"}else{open FI,$ARGV[1]}; #second file, better small
 while(<FI>)
 {
 chomp;
 my @x=split/\t/,$_;
 my $key=join("\t",@x[@cols2]);
-$rec{$key}=$_;
+$rec{$key}{$_}=1;
 }
 close FI;
 
-open FI,$ARGV[0]; #large file
+if($ARGV[0]=~/\.gz$/){open FI,"gunzip -c $ARGV[0]|"}else{open FI,$ARGV[0]}; ##first file, better large
 while(<FI>)
 {
 chomp;
+my $info=$_;
 my @x=split/\t/,$_;
 my $key=join("\t",@x[@cols1]);
-my $app=defined $rec{$key}?$rec{$key}:"NULL";
-print join("\t",$_,$app),"\n" 
+if(defined $rec{$key})
+{
+map {
+print join("\t",$info,$_),"\n";
+} keys%{$rec{$key}}
+}else{print join("\t",$_,"NOOVERLAP"),"\n" }
 }
 close FI;
+

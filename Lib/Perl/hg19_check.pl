@@ -22,8 +22,10 @@ chomp;
 my @x=split/\t/,$_;
 next if (length($x[3]) !=1 || length($x[4]) !=1 || $x[3] eq '-' || $x[4] eq '-');
 my ($chr,$pos,$ref)=@x[0,2,3];
+next if !defined $genome{$chr};
+$ref=uc($ref);
 my $ref0=uc(substr($genome{$chr},$pos-1,1));
-if($ref ne $ref0){print "Error!, ref should be $ref0 : $_\n"}
+if($ref ne $ref0){print "$_, ref_should_be $ref0 \n"}
 $test++;
 }
 close FI;
