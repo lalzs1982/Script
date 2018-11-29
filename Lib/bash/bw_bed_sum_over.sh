@@ -6,7 +6,7 @@ rand=`awk 'BEGIN{srand(); print int(1000*rand())}'` #random number for temporary
 bed_col=`awk 'BEGIN{FS="\t"}{print NF; exit}' $bed`
 
 if [ $bed_col -eq 6 ];then
-/project2/xinhe/zhongshan1/tools/mut_type.pl $bed 4 > $bed.$rand.1 #add mutation types
+/project2/xinhe/zhongshan1/code/perl/mut_type.pl $bed 4 > $bed.$rand.1 #add mutation types
 fi
 
 echo "produce mutation rate sum for each region"
@@ -22,7 +22,7 @@ else
 cp $bed $bed.$rand.2
 fi
 
-/project2/xinhe/zhongshan1/tools/bash/bw_bed_sum.sh $baseline/$mut.bw $bed.$rand.2 #get $bed.$rand.2.bwbed
+/project2/xinhe/zhongshan1/code/bash/bw_bed_sum.sh $baseline/$mut.bw $bed.$rand.2 #get $bed.$rand.2.bwbed
 cat $bed.$rand.2.bwbed >> $bed.bwbed.sum
 done
 
@@ -35,3 +35,4 @@ done
 mv $bed.bwbed.sum.$rand.1 $bed.bwbed.sum # $bed.bwbed.sum
 rm $bed.$rand*
 echo "$bed.bwbed.sum produced"
+
